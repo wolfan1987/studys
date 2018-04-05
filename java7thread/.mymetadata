@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="java7thread"
+  id="myeclipse.1437115359940"
+  context-root="/java7thread"
+  j2ee-spec="6.0"
+  archive="java7thread.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+
