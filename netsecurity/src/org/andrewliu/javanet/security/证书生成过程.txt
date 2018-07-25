@@ -1,0 +1,129 @@
+证书生成过程如下：
+
+1. 生成keystore和自签名的certificate, 并生成相应公钥和私钥
+
+%keytool -genkeypair -alias duke -keyalg RSA -validity 7 -keystore keystore 
+
+Enter keystore password: password
+
+What is your first and last name [Unknown]: Duke
+
+What is the name of your organizational unit [Unknown]: Java Software
+
+What is the name of your organization [Unknown]: Sun Microsystems, Inc.
+
+What is the name of your City or Locality [Unknown]: Palo Alto
+
+What is the name of your State or Province [Unknown]: CA
+
+What is the two-letter country code for this unit [Unknown]: US
+Is CN=Duke, OU=Java Software, O="Sun Microsystems, Inc.",
+L=Palo Alto, ST=CA, C=US correct 
+[no]: yes
+
+Enter key password for <duke> (RETURN if same as keystore password): <CR>
+
+
+2.查看keystore
+
+%keytool -list -v -keystore keystore
+
+Enter keystore password: password
+
+Keystore type: jks
+
+Keystore provider: SUN
+
+Your keystore contains 1 entry
+
+Alias name: duke
+
+Creation date: Dec 20, 2001
+
+Entry type: keyEntry
+
+Certificate chain length: 1
+
+Certificate[1]:
+
+Owner: CN=Duke, OU=Java Software, O="Sun Microsystems, Inc.",L=Palo Alto, ST=CA, C=US
+
+Issuer: CN=Duke, OU=Java Software, O="Sun Microsystems, Inc.", L=Palo Alto, ST=CA, C=US
+
+Serial number: 3c22adc1
+
+Valid from: Thu Dec 20 19:34:25 PST 2001 until: Thu Dec 27 19:34:25 PST 2001
+
+Certificate fingerprints: MD5: F1:5B:9B:A1:F7:16:CF:25:CF:F4:FF:35:3F:4C:9C:F0
+
+SHA1: B2:00:50:DD:B6:CC:35:66:21:45:0F:96:AA:AF:6A:3D:E4:03:7C:74
+
+
+3. 导出证书
+
+%keytool -export -alias duke -keystore keystore -rfc -file duke.cer
+
+Enter keystore password: password
+
+Certificate stored in file <duke.cer>
+
+% cat duke.cer
+
+-----BEGIN CERTIFICATE-----MIICXjCCAccCBDwircEwDQYJKoZIhvcNAQEEBQAwdjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRIwEAYDVQQHEwlQYWxvIEFsdG8xHzAdBgNVBAoTFlN1biBNaWNyb3N5c3RlbXMsIEluYy4xFjAUBgNVBAsTDUphdmEgU29mdHdhcmUxDTALBgNVBAMTBER1a2UwHhcNMDExMjIxMDMzNDI1WhcNMDExMjI4MDMzNDI1WjB2MQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExEjAQBgNVBAcTCVBhbG8gQWx0bzEfMB0GA1UEChMWU3VuIE1pY3Jvc3lzdGVtcywgSW5jLjEWMBQGA1UECxMNSmF2YSBTb2Z0d2FyZTENMAsGA1UEAxMERHVrZTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA1loObJzNXsi5aSr8N4XzDksD6GjTHFeqG9DUFXKEOQetfYXvA8F9uWtz8WInrqskLTNzwXgmNeWkoM7mrPpK6Rf5M3G1NXtYzvxyi473Gh1h9k7tjJvqSVKO7E1oFkQYeUPYifxmjbSMVirWZgvo2UmA1c76oNK+NhoHJ4qjeCUCAwEAATANBgkqhkiG9w0BAQQFAAOBgQCRPoQYw9rWWvfLPQuPXowvFmuebsTc28qI7iFWm6BJTT/qdmzti7B5MHOt9BeVEft3mMeBU0CS2guaBjDpGlf+zsK/UUi1w9C4mnwGDZzqY/NKKWtLxabZ5M+4MAKLZ92ePPKGpobM2CPLfM8ap4IgAzCbBKd8+CMp8yFmifze9Q==
+
+-----END CERTIFICATE-----
+
+
+4. 将第三步导出的证书导入到一个truststore
+
+% keytool -import -alias dukecert -file duke.cer -keystore truststore
+
+Enter keystore password: trustword
+
+Owner: CN=Duke, OU=Java Software, O="Sun Microsystems, Inc.", L=Palo Alto, ST=CA, C=US
+
+Issuer: CN=Duke, OU=Java Software, O="Sun Microsystems, Inc.", L=Palo Alto, ST=CA, C=US
+
+Serial number: 3c22adc1
+
+Valid from: Thu Dec 20 19:34:25 PST 2001 until: Thu Dec 27 19:34:25 PST 2001
+
+Certificate fingerprints:
+
+MD5: F1:5B:9B:A1:F7:16:CF:25:CF:F4:FF:35:3F:4C:9C:F0
+
+SHA1: B2:00:50:DD:B6:CC:35:66:21:45:0F:96:AA:AF:6A:3D:E4:03:7C:74
+
+Trust this certificate [no]: yes
+
+Certificate was added to keystore
+
+
+5. 检查 truststore
+
+% keytool -list -v -keystore truststore
+Enter keystore password: trustword
+
+Keystore type: jks
+
+Keystore provider: SUN
+
+Your keystore contains 1 entry
+
+Alias name: dukecert
+
+Creation date: Dec 20, 2001
+
+Entry type: trustedCertEntry
+
+Owner: CN=Duke, OU=Java Software, O="Sun Microsystems, Inc.", L=Palo Alto, ST=CA, C=US
+
+Issuer: CN=Duke, OU=Java Software, O="Sun Microsystems, Inc.", L=Palo Alto, ST=CA, C=USSerial number: 3c22adc1
+
+Valid from: Thu Dec 20 19:34:25 PST 2001 until: Thu Dec 27 19:34:25 PST 2001
+
+Certificate fingerprints:
+
+MD5: F1:5B:9B:A1:F7:16:CF:25:CF:F4:FF:35:3F:4C:9C:F0
+
+SHA1: B2:00:50:DD:B6:CC:35:66:21:45:0F:96:AA:AF:6A:3D:E4:03:7C:74
