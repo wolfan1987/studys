@@ -1,0 +1,82 @@
+AspectJ静态编译织入
+前面两种都是说的在代码运行时动态的生成class文件达到动态代理的目的，那我们现在回到静态代理，静态代理唯一的缺点就是我们需要对每一个方法编写我们的代理逻辑，造成了工作的繁琐和复杂。AspectJ就是为了解决这个问题，在编译成class字节码的时候在方法周围加上业务逻辑。复杂的工作由特定的编译器帮我们做。
+
+AOP有切面(Aspect)、连接点(joinpoint)、通知(advice)、切入点(Pointcut)、目标对象(target)等概念,这里不详细介绍这些概念.
+
+如何做ASpectj开发,这里使用的是maven插件,详细使用文档http://www.mojohaus.org/aspectj-maven-plugin/examples/differentTestAndCompile.html:
+
+<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <weaveDependencies>
+                    <!--是否要植入jar-->
+                        <!--<weaveDependency>-->
+                            <!--<groupId>com.meituan.inf</groupId>-->
+                            <!--<artifactId>xmd-common-log4j2</artifactId>-->
+                        <!--</weaveDependency>-->
+ 
+                    </weaveDependencies>
+ 
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>UTF-8</encoding>
+                    <complianceLevel>1.6</complianceLevel>
+                    <verbose>true</verbose>
+                    <showWeaveInfo>true</showWeaveInfo>
+                </configuration>
+            </plugin>
+            
+然后编写Aspectj的文件.可以编写.ajc文件,或者使用java文件也可以,Aspectj语法可以参考http://sishuok.com/forum/posts/list/281.html 此文章：
+
+//表示对实现了Mtrace接口的类，并且参数数Integer 同时方法中有@RequestMapping 注解的方法插入代理
+    @Pointcut("execution(* com.meituan.deploy.Mtrace+.*(java.lang.Integer)) && @annotation(org.springframework.web.bind.annotation.RequestMapping)")
+    public void zhiru2() {
+ 
+    }
+    @Before(value = "zhiru2()")//前面植入
+    public void doBeforeTask2(JoinPoint point) {
+    	//方法调用前植入
+        System.out.println("=========BEFORE=========");
+    }
+ 
+    @After("zhiru2()")//后面植入
+    public void after(JoinPoint point) {
+    //方法调用后植入
+        System.out.println("===========AFTER=======");
+    }
+        @AfterThrowing("zhiru2()")
+    public void afterthrowing(JoinPoint point) {
+        System.out.println("===========throwing=======");
+    }
+    @AfterReturning("zhiru2()")
+    public void afterRutuen(JoinPoint point) {
+        System.out.println("===========return=======");
+    }
+  编写好ASpectj文件之后，编译代码就能够得到静态织入的class文件了,
+  Aspectj并不是动态的在运行时生成代理类，而是在编译的时候就植入代码到class文件
+由于是静态织入的，所以性能相对来说比较好
+Aspectj不受类的特殊限制,不管方法是private、或者static、或者final的,都可以代理
+Aspectj不会代理除了限定方法之外任何其他诸如toString(),clone()等方法
+
+Spring Aop中的代理
+Spring代理实际上是对JDK代理和CGLIB代理做了一层封装，并且引入了AOP概念:Aspect、advice、joinpoint等等，同时引入了AspectJ中的一些注解@pointCut,@after,
+@before等等.Spring Aop严格的来说都是动态代理，所以实际上Spring代理和Aspectj的关系并不大.  
+
+https://blog.csdn.net/a837199685/article/details/68930987
+
+  
+  
+  
+  
+  
+  
