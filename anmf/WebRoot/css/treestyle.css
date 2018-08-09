@@ -1,0 +1,31 @@
+#containerul,#containerul ul {
+	text-align: left;
+	margin: 0;
+	padding: 0
+}
+
+#containerul li {
+	margin: 0 0 0 30px;
+	padding: 0;
+	list-style-type: none
+}
+
+#containerul .symbols {
+	float: left;
+	width: 12px;
+	height: 1em;
+	background-position: 0 50%;
+	background-repeat: no-repeat
+}
+
+A:link {
+	color: blue
+}
+
+A:visited {
+	color: #8B3E2F
+}
+
+A:hover {
+	color: red
+}
