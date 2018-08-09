@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="hchp_server"
+  id="myeclipse.1439792808401"
+  context-root="/hchp_server"
+  j2ee-spec="6.0"
+  archive="hchp_server.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+
