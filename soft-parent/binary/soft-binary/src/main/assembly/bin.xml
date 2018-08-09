@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+    <id>bin</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>target/generated-resources/appassembler/jsw/soft-binary/lib</directory>
+            <outputDirectory>lib</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>target/generated-resources/appassembler/jsw/soft-binary/etc</directory>
+            <outputDirectory>etc</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>target/generated-resources/appassembler/jsw/soft-binary/logs</directory>
+            <outputDirectory>logs</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>target/generated-resources/appassembler/jsw/soft-binary/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>soft-binary</include>
+                <include>wrapper*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>target/generated-resources/appassembler/jsw/soft-binary/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>soft-binary.bat</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

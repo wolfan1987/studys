@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<restictHandlers>
+    <handler>com.zjht.solar.mk.state.restrict.MinuteRestrictPeriodHandler</handler>
+    <handler>com.zjht.solar.mk.state.restrict.HourRestrictPeriodHandler</handler>
+    <handler>com.zjht.solar.mk.state.restrict.DayRestrictPeriodHandler</handler>
+    <handler>com.zjht.solar.mk.state.restrict.MonthRestrictPeriodHandler</handler>
+    <handler>com.zjht.solar.mk.state.restrict.YearRestrictPeriodHandler</handler>
+</restictHandlers>

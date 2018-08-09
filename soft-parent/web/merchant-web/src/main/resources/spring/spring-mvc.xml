@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <context:property-placeholder location="classpath:config/application.properties"/>
+
+
+    <dubbo:annotation/>
+
+    <mvc:default-servlet-handler/>
+
+    <context:component-scan base-package="com.zjht.**.controller">
+
+        <context:include-filter type="annotation"
+                                expression="com.alibaba.dubbo.config.annotation.Service"/>
+    </context:component-scan>
+
+    <mvc:annotation-driven/>
+
+
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes" value="text/plain;charset=UTF-8"/>
+            </bean>
+            <!-- 通过直接设置日期格式方式处理Json中的日期格式 -->
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="com.fasterxml.jackson.databind.ObjectMapper">
+                        <property name="dateFormat">
+                            <bean class="java.text.SimpleDateFormat">
+                                <constructor-arg value="yyyy-MM-dd HH:mm:ss"/>
+                            </bean>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!-- thymeleaf -->
+    <!--<bean id="templateResolver"-->
+          <!--class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">-->
+        <!--<constructor-arg ref="servletContext"/>-->
+        <!--<property name="prefix" value="/templates/"/>-->
+        <!--<property name="suffix" value=".html"/>-->
+        <!--<property name="templateMode" value="HTML5"/>-->
+        <!--<property name="characterEncoding" value="UTF-8"/>-->
+        <!--<property name="cacheable" value="${thymeleaf.cacheable}"/>-->
+    <!--</bean>-->
+
+    <mvc:view-controller path="/index" view-name="index"/>
+    <mvc:view-controller path="/login" view-name="/login"/>
+    <mvc:view-controller path="/unauthorized" view-name="/error/403"/>
+    <mvc:view-controller path="/error/error_login" view-name="/error/error_login"/>
+    <mvc:resources mapping="/favicon.ico" location="/static/images/favicon.ico"/>
+    <mvc:resources mapping="/static/**" location="/static/"/>
+    <mvc:resources mapping="/html/**" location="/html/"/>
+    <mvc:default-servlet-handler/>
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+</beans>

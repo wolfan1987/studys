@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zjht.soft.merchant.mapper.PayTypeMapper">
+    <resultMap id="payType" type="com.zjht.soft.merchant.entity.PayType">
+        <id column="ID" property="id"/>
+        <result column="MID" property="mid"/>
+        <result column="TID" property="tid"/>
+        <result column="PAY_CODE" property="payCode"/>
+    </resultMap>
+
+    <select id="findByMidAndTid" resultMap="payType">
+       SELECT  *  FROM  SOFT_PAY_FLAG  WHERE MID=#{mid,jdbcType=VARCHAR}  AND   TID=#{tid,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findAll" resultMap="payType">
+        SELECT * FROM SOFT_PAY_FLAG
+    </select>
+
+    <insert id="create" parameterType="com.zjht.soft.merchant.entity.PayType">
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            SELECT SOFT_PAY_FLAG_SEQ.nextVal from dual
+        </selectKey>
+        INSERT INTO SOFT_PAY_FLAG (ID, MID,TID,PAY_CODE)
+        VALUES (
+        #{id, jdbcType=NUMERIC},
+        #{mid, jdbcType=VARCHAR},
+        #{tid, jdbcType=VARCHAR},
+        #{payCode, jdbcType=NUMERIC}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.zjht.soft.merchant.entity.PayType">
+        UPDATE SOFT_PAY_FLAG
+        <set>
+            <trim suffix="" suffixOverrides=",">
+                <if test="payCode != null ">
+                    PAY_CODE=#{payCode,jdbcType=NUMERIC},
+                </if>
+                <if test="tid != null and tid!=''">
+                    TID=#{tid,jdbcType=VARCHAR}
+                </if>
+                <if test="mid != null and mid!=''">
+                    MID=#{mid,jdbcType=VARCHAR}
+                </if>
+            </trim>
+        </set>
+        WHERE ID=#{id,jdbcType=NUMERIC}
+
+    </update>
+</mapper>

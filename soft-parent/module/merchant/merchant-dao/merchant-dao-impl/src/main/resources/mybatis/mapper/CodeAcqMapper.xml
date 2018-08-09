@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zjht.soft.merchant.mapper.CodeAcqMapper">
+    <resultMap id="codeAcq" type="com.zjht.soft.merchant.entity.CodeAcq">
+        <id column="HEAD_CODE" property="headCode"/>
+        <result column="NUM" property="num"/>
+        <result column="HEAD_LEN" property="headLen"/>
+        <result column="CODE_LEN" property="codeLen"/>
+        <result column="ACQ_ID" property="acqId"/>
+        <result column="TELLER" property="teller"/>
+        <result column="MODI_DATE" property="modiDate"/>
+        <result column="FLAG" property="flag"/>
+        <result column="MEMO" property="memo"/>
+        <result column="PAY_TYPE" property="payType"/>
+        <result column="PAY_FLAG" property="payFlag"/>
+    </resultMap>
+
+    <select id="findByHeadCode" resultMap="codeAcq">
+       SELECT * FROM SOFT_CODE_ACQ WHERE HEAD_CODE=#{headCode,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findAll" resultMap="codeAcq">
+        SELECT T.* FROM SOFT_CODE_ACQ T ORDER BY T.HEAD_LEN DESC
+    </select>
+
+    <insert id="create" parameterType="com.zjht.soft.merchant.entity.CodeAcq">
+        INSERT INTO SOFT_CODE_ACQ (HEAD_CODE, NUM,
+        HEAD_LEN,CODE_LEN,ACQ_ID,TELLER,MODI_DATE,FLAG,MEMO,PAY_TYPE,PAY_FLAG)
+        VALUES (
+        #{headCode, jdbcType=VARCHAR},
+        #{num, jdbcType=NUMERIC},
+        #{headLen, jdbcType=NUMERIC},
+        #{codeLen, jdbcType=NUMERIC},
+        #{acqId, jdbcType=VARCHAR},
+        #{teller, jdbcType=VARCHAR},
+        #{modiDate, jdbcType=TIMESTAMP},
+        #{flag, jdbcType=NUMERIC},
+        #{memo, jdbcType=VARCHAR},
+        #{payType, jdbcType=NUMERIC},
+        #{payFlag, jdbcType=NUMERIC}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.zjht.soft.merchant.entity.CodeAcq">
+        UPDATE SOFT_CODE_ACQ
+        <set>
+            <trim suffix="" suffixOverrides=",">
+                <if test="modiDate != null ">
+                    MODI_DATE=#{modiDate,jdbcType=TIMESTAMP},
+                </if>
+                <if test="flag != null and flag!=''">
+                    FLAG=#{flag,jdbcType=NUMERIC}
+                </if>
+                <if test="payType != null and payType!=''">
+                    PAY_TYPE=#{payType,jdbcType=NUMERIC}
+                </if>
+            </trim>
+        </set>
+        WHERE HEAD_CODE=#{headCode,jdbcType=VARCHAR}
+
+    </update>
+</mapper>

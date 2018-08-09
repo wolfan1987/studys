@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <task:annotation-driven scheduler="scheduler" />
+    <task:scheduler id="scheduler" pool-size="5"  />
+    
+    <bean id="zkClient" class="com.zjht.soft.merchant.util.ZooKeeperClientFactory">
+        <property name="zooKeeperURL" value="${lock.zookeeper.address}" />
+        <property name="retryPolicy">
+            <bean class="org.apache.curator.retry.ExponentialBackoffRetry">
+                <constructor-arg name="baseSleepTimeMs" value="1000" />
+                <constructor-arg name="maxRetries" value="3" />
+            </bean>
+        </property>
+    </bean>
+    
+</beans>
+

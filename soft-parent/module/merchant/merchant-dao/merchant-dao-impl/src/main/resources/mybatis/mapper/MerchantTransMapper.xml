@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zjht.soft.merchant.mapper.MerchantTransMapper">
+    <resultMap id="merchantOrder" type="com.zjht.soft.merchant.entity.MerchantTrans">
+        <id column="ID" property="id"/>
+        <result column="ORDER_ID" property="orderId"/>
+        <result column="REQ_DATA" property="reqData"/>
+        <result column="TID" property="tid"/>
+        <result column="MID" property="mid"/>
+        <result column="PAYMENT" property="payment"/>
+        <result column="TXN_AMT" property="txnAmt"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="ORDER_STATUS" property="orderStatus"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+        <result column="RES_DATA" property="resData"/>
+        <result column="STATUS" property="status"/>
+        <result column="SYSTRACE" property="systrace"/>
+        <result column="AUTH_CODE" property="authCode"/>
+        <result column="CURRENCY_CODE" property="currencyCode"/>
+        <result column="BATCH_NO" property="batchNo"/>
+        <result column="NOTE" property="note"/>
+        <result column="TXN_ID" property="txnId"/>
+        <result column="TXN_DATE" property="txnDate"/>
+        <result column="TXN_TIME" property="txnTime"/>
+        <result column="FAV_AMT" property="favAmt"/>
+        <result column="PAY_AMT" property="payAmt"/>
+    </resultMap>
+
+    <select id="findById" resultMap="merchantOrder">
+        SELECT *
+        FROM SOFT_SO_LOG
+        WHERE ID = #{id,jdbcType=NUMERIC}
+    </select>
+
+    <select id="findByOrderId" resultMap="merchantOrder" parameterType="java.lang.String">
+        SELECT * FROM SOFT_SO_LOG WHERE ORDER_ID=#{orderId,jdbcType=VARCHAR}
+        <if test="txnId != null and txnId!=''">
+            AND TXN_ID=#{txnId,jdbcType=VARCHAR}
+        </if>
+        ORDER BY CREATE_TIME DESC
+    </select>
+
+    <!-- 从数据库取出需要轮询的数据 -->
+    <select id="findAskOrders" resultMap="merchantOrder" parameterType="java.util.Date">
+        SELECT *
+        FROM SOFT_SO_LOG T
+        WHERE (T.ORDER_STATUS = 4 OR t.ORDER_STATUS = 6)
+              AND
+              T.CREATE_TIME BETWEEN #{secondTime,jdbcType=TIMESTAMP} AND #{sysDate,jdbcType=TIMESTAMP}
+    </select>
+
+    <!-- 从数据库取出需要撤销的数据 -->
+    <select id="findRevokeOrders" resultMap="merchantOrder">
+        SELECT *
+        FROM SOFT_SO_LOG T
+        WHERE T.ORDER_STATUS IN (4, 6, 8, -2)
+              AND
+              T.CREATE_TIME BETWEEN #{beforday,jdbcType=TIMESTAMP} AND #{secondTime,jdbcType=TIMESTAMP}
+    </select>
+
+    <insert id="create" parameterType="com.zjht.soft.merchant.entity.MerchantTrans">
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            SELECT SOFT_SO_LOG_SEQ.nextVal from dual
+        </selectKey>
+        INSERT INTO SOFT_SO_LOG (ID, ORDER_ID, REQ_DATA, TID, MID,
+        PAYMENT,TXN_AMT,CREATE_TIME,ORDER_STATUS,UPDATE_TIME,RES_DATA,STATUS,SYSTRACE,
+        AUTH_CODE,CURRENCY_CODE,BATCH_NO,NOTE,TXN_ID,TXN_DATE,TXN_TIME,FAV_AMT,PAY_AMT)
+        VALUES (
+        #{id, jdbcType=NUMERIC},
+        #{orderId, jdbcType=VARCHAR},
+        #{reqData, jdbcType=VARCHAR},
+        #{tid, jdbcType=VARCHAR},
+        #{mid, jdbcType=VARCHAR},
+        #{payment, jdbcType=NUMERIC},
+        #{txnAmt, jdbcType=NUMERIC},
+        #{createTime, jdbcType=TIMESTAMP},
+        #{orderStatus, jdbcType=NUMERIC},
+        #{updateTime, jdbcType=TIMESTAMP},
+        #{resData, jdbcType=VARCHAR},
+        #{status, jdbcType=NUMERIC},
+        #{systrace, jdbcType=VARCHAR},
+        #{authCode, jdbcType=VARCHAR},
+        #{currencyCode, jdbcType=VARCHAR},
+        #{batchNo, jdbcType=VARCHAR},
+        #{note, jdbcType=VARCHAR},
+        #{txnId, jdbcType=VARCHAR},
+        #{txnDate, jdbcType=VARCHAR},
+        #{txnTime, jdbcType=VARCHAR},
+        #{favAmt, jdbcType=NUMERIC},
+        #{payAmt, jdbcType=NUMERIC}
+        )
+    </insert>
+
+    <update id="updatePayTimeOutOrders">
+        <![CDATA[
+        UPDATE SOFT_SO_LOG T
+        SET T.ORDER_STATUS = -2
+
+        WHERE T.CREATE_TIME < #{beforDate, jdbcType=TIMESTAMP} AND
+              (T.ORDER_STATUS = 4 OR T.ORDER_STATUS = 6 OR T.ORDER_STATUS = 0)
+        ]]>
+
+    </update>
+
+    <update id="update" parameterType="com.zjht.soft.merchant.entity.MerchantTrans">
+        UPDATE SOFT_SO_LOG
+        <set>
+            <trim suffix="" suffixOverrides=",">
+                <if test="updateTime != null ">
+                    UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="orderStatus != null ">
+                    ORDER_STATUS=#{orderStatus,jdbcType=NUMERIC},
+                </if>
+                <if test="status != null ">
+                    STATUS=#{status,jdbcType=NUMERIC},
+                </if>
+                <if test="systrace != null and systrace!=''">
+                    SYSTRACE=#{systrace,jdbcType=VARCHAR},
+                </if>
+                <if test="payment != null and payment!=''">
+                    PAYMENT=#{payment,jdbcType=NUMERIC},
+                </if>
+                <if test="resData != null and resData!=''">
+                    RES_DATA=#{resData,jdbcType=VARCHAR},
+                </if>
+                <if test="favAmt != null">
+                    FAV_AMT=#{favAmt,jdbcType=NUMERIC},
+                </if>
+                <if test="payAmt != null">
+                    PAY_AMT=#{payAmt,jdbcType=NUMERIC}
+                </if>
+            </trim>
+        </set>
+        WHERE ID=#{id,jdbcType=NUMERIC}
+    </update>
+
+</mapper>
+

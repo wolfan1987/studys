@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zjht.soft.merchant.mapper.PosInfoMapper">
+    <resultMap id="posInfo" type="com.zjht.soft.merchant.entity.PosInfo">
+        <id column="ID" property="id"/>
+        <result column="MID" property="mid"/>
+        <result column="TID" property="tid"/>
+        <result column="BATCH_NO" property="batchNo"/>
+        <result column="SYSTRACE" property="systrace"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+        <result column="FLAG" property="flag"/>
+    </resultMap>
+
+    <select id="findByMidAndTid" resultMap="posInfo">
+       SELECT * FROM SOFT_POS_INFO WHERE  MID=#{mid,jdbcType=VARCHAR} AND TID=#{tid,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findAll" resultMap="posInfo">
+        SELECT T.* FROM SOFT_POS_INFO T
+    </select>
+
+    <insert id="create" parameterType="com.zjht.soft.merchant.entity.PosInfo">
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            SELECT SOFT_POS_INFO_SEQ.nextVal from dual
+        </selectKey>
+        INSERT INTO SOFT_POS_INFO (ID,MID,TID,BATCH_NO,SYSTRACE,UPDATE_TIME,FLAG)
+        VALUES (
+        #{id, jdbcType=NUMERIC},
+        #{mid, jdbcType=VARCHAR},
+        #{tid, jdbcType=VARCHAR},
+        #{batchNo, jdbcType=VARCHAR},
+        #{systrace, jdbcType=VARCHAR},
+        #{updateTime, jdbcType=VARCHAR},
+        #{flag, jdbcType=NUMERIC}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.zjht.soft.merchant.entity.PosInfo">
+        UPDATE SOFT_POS_INFO
+        <set>
+            <trim suffix="" suffixOverrides=",">
+                <if test="updateTime != null and updateTime!=''">
+                    UPDATE_TIME=#{updateTime,jdbcType=VARCHAR},
+                </if>
+                <if test="flag != null and flag!=''">
+                    FLAG=#{flag,jdbcType=NUMERIC},
+                </if>
+                <if test="batchNo != null and batchNo!=''">
+                    BATCH_NO=#{batchNo,jdbcType=VARCHAR},
+                </if>
+                <if test="systrace != null and systrace!=''">
+                    SYSTRACE=#{systrace,jdbcType=VARCHAR},
+                </if>
+                <if test="mid != null and mid!=''">
+                    MID=#{mid,jdbcType=VARCHAR},
+                </if>
+                <if test="tid != null and tid!=''">
+                    TID=#{tid,jdbcType=VARCHAR}
+                </if>
+            </trim>
+        </set>
+        WHERE ID=#{id,jdbcType=NUMERIC}
+        <if test="oldSystrace != null and oldSystrace!=''">
+            AND SYSTRACE=#{oldSystrace,jdbcType=VARCHAR}
+        </if>
+    </update>
+</mapper>

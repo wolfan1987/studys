@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <context:property-placeholder
+            location="classpath:commons-dbconfig.properties,classpath:socket.properties"/>
+    <!--  开启bean注释 -->
+    <context:annotation-config/>
+    <!--   开启cglib动态代理方式 -->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <bean id="socketClientFactory"
+          class="com.zjht.solar.commons.socket.netty.spring.NettyClientFactoryFactoryBean"
+          init-method="init" destroy-method="destroy">
+        <property name="address" value="${socket.address}"/>
+        <property name="port" value="${socket.port}"/>
+        <property name="connectTimeout" value="${socket.connectTimeout}"/>
+    </bean>
+
+    <!--socketClientPool配置-->
+    <bean id="socketClientPool" class="com.zjht.solar.commons.socket.pool.SocketClientPool"
+          init-method="init" destroy-method="destroy">
+        <property name="clientFactory" ref="socketClientFactory"/>
+        <property name="testOnBorrow" value="true"/>
+        <property name="testOnReturn" value="true"/>
+
+    </bean>
+
+    <context:component-scan base-package="com.zjht.soft.**.dao">
+        <context:include-filter type="annotation"
+                                expression="com.alibaba.dubbo.config.annotation.Service"/>
+    </context:component-scan>
+
+    <dubbo:annotation/>
+</beans>

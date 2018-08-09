@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+
+    <context:property-placeholder location="classpath:*.properties"/>
+
+    <!--  开启bean注释 -->
+    <context:annotation-config/>
+    <!--   开启cglib动态代理方式 -->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <context:component-scan
+            base-package="com.zjht.solar.**.service">
+        <context:include-filter type="annotation"
+                                expression="com.alibaba.dubbo.config.annotation.Service"/>
+    </context:component-scan>
+
+    <dubbo:annotation/>
+
+    <bean id="payProducer" class="com.zjht.solar.ecard.api.producer.PayProducer"
+          init-method="doStart" destroy-method="doShutdown">
+        <constructor-arg index="0" value="${pay.producer.queue.name}"/>
+        <constructor-arg index="1" value="${pay.producer.queue.intervalMillis}"/>
+        <property name="topic" value="${pay.producer.topic}"/>
+        <property name="tags" value="${pay.producer.tags}"/>
+        <property name="maxRunRounds" value="${pay.producer.maxRunRounds}"/>
+        <property name="producerGroup" value="${pay.producer.producerGroup}"/>
+        <property name="namesrvAddr" value="${pay.producer.namesrvAddr}"/>
+    </bean>
+
+    <bean id="wxBalanceProducer" class="com.zjht.solar.ecard.api.producer.WxCardBalanceProducer"
+          init-method="doStart" destroy-method="doShutdown">
+        <constructor-arg index="0" value="${wx.producer.queue.name}"/>
+        <constructor-arg index="1" value="${wx.producer.queue.intervalMillis}"/>
+        <property name="topic" value="${wx.producer.topic}"/>
+        <property name="tags" value="${wx.producer.tags}"/>
+        <property name="maxRunRounds" value="${wx.producer.maxRunRounds}"/>
+        <property name="producerGroup" value="${wx.producer.producerGroup}"/>
+        <property name="namesrvAddr" value="${wx.producer.namesrvAddr}"/>
+    </bean>
+
+    <bean id="openCardProducer" class="com.zjht.solar.ecard.api.producer.OpenCardProducer"
+          init-method="doStart" destroy-method="doShutdown">
+        <constructor-arg index="0" value="${openCard.producer.queue.name}"/>
+        <constructor-arg index="1" value="${openCard.producer.queue.intervalMillis}"/>
+        <property name="topic" value="${openCard.producer.topic}"/>
+        <property name="tags" value="${openCard.producer.tags}"/>
+        <property name="maxRunRounds" value="${openCard.producer.maxRunRounds}"/>
+        <property name="producerGroup" value="${openCard.producer.producerGroup}"/>
+        <property name="namesrvAddr" value="${openCard.producer.namesrvAddr}"/>
+    </bean>
+
+    <bean id="rechargeProducer" class="com.zjht.solar.ecard.api.producer.RechargeProducer"
+          init-method="doStart" destroy-method="doShutdown">
+        <constructor-arg index="0" value="${recharge.producer.queue.name}"/>
+        <constructor-arg index="1" value="${recharge.producer.queue.intervalMillis}"/>
+        <property name="topic" value="${recharge.producer.topic}"/>
+        <property name="tags" value="${recharge.producer.tags}"/>
+        <property name="maxRunRounds" value="${recharge.producer.maxRunRounds}"/>
+        <property name="producerGroup" value="${recharge.producer.producerGroup}"/>
+        <property name="namesrvAddr" value="${recharge.producer.namesrvAddr}"/>
+    </bean>
+
+    <bean id="buyProducer" class="com.zjht.solar.ecard.api.producer.BuyProducer"
+          init-method="doStart" destroy-method="doShutdown">
+        <constructor-arg index="0" value="${buy.producer.queue.name}"/>
+        <constructor-arg index="1" value="${buy.producer.queue.intervalMillis}"/>
+        <property name="topic" value="${buy.producer.topic}"/>
+        <property name="tags" value="${buy.producer.tags}"/>
+        <property name="maxRunRounds" value="${buy.producer.maxRunRounds}"/>
+        <property name="producerGroup" value="${buy.producer.producerGroup}"/>
+        <property name="namesrvAddr" value="${buy.producer.namesrvAddr}"/>
+    </bean>
+
+    <bean id="unfreezeProducer" class="com.zjht.solar.ecard.api.producer.UnfreezeProducer"
+          init-method="doStart" destroy-method="doShutdown">
+        <constructor-arg index="0" value="${unfreeze.producer.queue.name}"/>
+        <constructor-arg index="1" value="${unfreeze.producer.queue.intervalMillis}"/>
+        <property name="topic" value="${unfreeze.producer.topic}"/>
+        <property name="tags" value="${unfreeze.producer.tags}"/>
+        <property name="maxRunRounds" value="${unfreeze.producer.maxRunRounds}"/>
+        <property name="producerGroup" value="${unfreeze.producer.producerGroup}"/>
+        <property name="namesrvAddr" value="${unfreeze.producer.namesrvAddr}"/>
+    </bean>
+
+    <!--短信配置-->
+    <bean id="sendSmsMessage" class="com.zjht.solar.ecard.mq.service.impl.SendSmsMessage">
+        <property name="channel" value="${sms.channel}"/>
+        <property name="corporationCode" value="${sms.corporationCode}"/>
+        <property name="businessName" value="${sms.businessName}"/>
+        <property name="url" value="${sms.url}"/>
+        <property name="key" value="${sms.key}"/>
+    </bean>
+
+    <import resource="classpath:spring/spring-database.xml"/>
+    <import resource="classpath:spring/spring-redis.xml"/>
+    <import resource="classpath:spring/cache.beans.xml"/>
+    <import resource="classpath:spring/spring-email.xml"/>
+</beans>

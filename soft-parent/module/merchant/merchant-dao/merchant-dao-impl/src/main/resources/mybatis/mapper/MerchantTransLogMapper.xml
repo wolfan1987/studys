@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zjht.soft.merchant.mapper.MerchantTransLogMapper">
+    <resultMap id="merchantOrderLog" type="com.zjht.soft.merchant.entity.MerchantTransLog">
+        <id column="ID" property="id"/>
+        <result column="ORDER_ID" property="orderId"/>
+        <result column="REQ_DATA" property="reqData"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+        <result column="RES_DATA" property="resData"/>
+        <result column="TXN_ID" property="txnId"/>
+        <result column="TXN_DATE" property="txnDate"/>
+        <result column="TXN_TIME" property="txnTime"/>
+    </resultMap>
+
+    <select id="findById" resultMap="merchantOrderLog">
+       SELECT * FROM SOFT_POSP_LOG WHERE ID=#{id,jdbcType=NUMERIC}
+    </select>
+
+    <select id="findAll" resultMap="merchantOrderLog">
+       SELECT * FROM SOFT_POSP_LOG
+    </select>
+
+    <select id="findByOrderId" resultMap="merchantOrderLog" parameterType="java.lang.String">
+        SELECT * FROM SOFT_POSP_LOG WHERE ORDER_ID=#{orderId,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="create" parameterType="com.zjht.soft.merchant.entity.MerchantTransLog">
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            SELECT SOFT_POSP_LOG_SEQ.nextVal from dual
+        </selectKey>
+        INSERT INTO SOFT_POSP_LOG (ID, ORDER_ID,
+        REQ_DATA,CREATE_TIME,UPDATE_TIME,RES_DATA,TXN_ID,TXN_DATE,TXN_TIME)
+        VALUES (
+        #{id, jdbcType=NUMERIC},
+        #{orderId, jdbcType=VARCHAR},
+        #{reqData, jdbcType=VARCHAR},
+        #{createTime, jdbcType=TIMESTAMP},
+        #{updateTime, jdbcType=TIMESTAMP},
+        #{resData, jdbcType=VARCHAR},
+        #{txnId, jdbcType=VARCHAR},
+        #{txnDate, jdbcType=VARCHAR},
+        #{txnTime, jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.zjht.soft.merchant.entity.MerchantTransLog">
+        UPDATE SOFT_POSP_LOG
+        <set>
+            <trim suffix="" suffixOverrides=",">
+                <if test="updateTime != null ">
+                    UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="resData != null and resData!=''">
+                    RES_DATA=#{resData,jdbcType=VARCHAR}
+                </if>
+            </trim>
+        </set>
+        WHERE ID=#{id,jdbcType=NUMERIC}
+
+    </update>
+</mapper>
